@@ -1,6 +1,6 @@
-package core.node.document;
+package document;
 
-import core.node.Element;
+import node.Element;
 
 import java.util.ArrayList;
 import java.util.List;

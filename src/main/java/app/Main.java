@@ -1,14 +1,12 @@
 package app;
 
-import core.parser.HtmlParser;
-
-import java.util.ArrayList;
-import java.util.List;
+import node.Element;
+import parser.HtmlParser;
 
 public class Main {
 
     public static void main(String... args) {
-        HtmlParser.get("<html class=\"dazda\"><body><span style=\"background-red:red;\"></span>dzadazdazdazdazd<p><i>dazdazdzda</i></p>dzadazdazd</html>");
+        HtmlParser.get("<html class=\"dazdazda\" disabled='testets\"\"' open><body></body><p style=\"color:red; font-size:16px;\">").docElements.forEach(Element::print);
     }
 
 }
