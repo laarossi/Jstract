@@ -24,7 +24,15 @@ public class HtmlParser {
 
     private static List<Element> parents;
 
+    public static void init(){
+        tagData = new StringBuilder();
+        parent = null;
+        currentElement = null;
+        parents = new ArrayList<>();
+    }
+
     public static Document get(String data){
+        init();
         List<Element> documentTags = extractTags(data);
         return DocumentBuilder.create(documentTags).build();
     }
@@ -36,7 +44,7 @@ public class HtmlParser {
         parent = null;
         currentElement = null;
         tagData = new StringBuilder();
-        StringBuilder dataBuffer = new StringBuilder();
+        StringBuilder dataBuffer = new StringBuilder(), attributeBody = new StringBuilder();
         String character, nextCharacter;
         label:
         while (true) {
@@ -62,11 +70,12 @@ public class HtmlParser {
                 case ">":
                     if (isCloseTag(tagData.toString())) {
                         tagData.append(dataBuffer).append(character);
-                        closeTag();
+                        closeTag(attributeBody.toString());
+                        clean(attributeBody);
                     }else if (isOpenTag(tagData.toString())) {
                         tagData.append(dataBuffer).append(character);
-                        openTag();
-                        clean(dataBuffer);
+                        openTag(attributeBody.toString());
+                        clean(dataBuffer, attributeBody);
                     } else dataBuffer.append(character);
                     break;
                 case "/":
@@ -80,8 +89,8 @@ public class HtmlParser {
                     } else {
                         if (nextCharacter.equals(">")) {
                             tagData.append(dataBuffer).append(character).append(nextCharacter);
-                            openTag();
-                            closeTag();
+                            openTag(attributeBody.toString());
+                            closeTag(attributeBody.toString());
                         } else if (nextCharacter.equals("<") || tagData.length() != 0) {
                             dataBuffer.append(tagData).append(character).append(nextCharacter);
                             clean(tagData);
@@ -93,6 +102,7 @@ public class HtmlParser {
                     break;
                 default:
                     dataBuffer.append(character);
+                    if(tagData.length() == 0) attributeBody.append(character);
                     break;
             }
             offset++;
@@ -155,44 +165,68 @@ public class HtmlParser {
         return extractedAttributes;
     }
 
-
     public static Element extractElement(String tagData){
         Element element = new Element();
         tagData = tagData.trim().replaceAll(" +", " ").replaceAll("<|>","");
         if(tagData.contains(" ")){
-            element.tag = tagData.substring(0, tagData.indexOf(" "));
+            element.setTag(tagData.substring(0, tagData.indexOf(" ")));
             List<AbstractMap.SimpleEntry<String, String>> attributes = extractAttributes(tagData.substring(tagData.indexOf(" ")).trim());
             for(AbstractMap.SimpleEntry<String, String> entry : attributes){
                 element.setAttribute(entry.getKey(), entry.getValue());
             }
-        }else element.tag = tagData;
+        }else element.setTag(tagData);
         return element;
     }
 
-    public static void openTag(){
+    public static void openTag(String body){
         Element element = extractElement(tagData.toString());
+        body = body.trim().length() == 0 ? null : body;
         if(parent == null){
+            System.out.println("Parent is null");
+            element.setBody(body);
             parent = element;
             parents.add(parent);
         }else{
-            if(currentElement != null) parent = currentElement;
+            if(currentElement != null){
+                System.out.println("parent : " + parent.getBody());
+                currentElement.setBody(body);
+                System.out.println("current element : " + currentElement.getBody());
+                parent = currentElement;
+            }else {
+                parent.setBody(body);
+                System.out.println("parent ** : " + parent.getBody());
+            }
             currentElement = element;
-            currentElement.parent = parent;
+            currentElement.setParent(parent);
             parent.addChild(element);
         }
         clean(tagData);
     }
 
-    public static void closeTag(){
+    public static void closeTag(String body){
+        if(body.length() > 0 && !body.equals(" ")){
+            if(parent != null){
+                if(currentElement != null){
+                    currentElement.setBody(body);
+                    System.out.println("parent " + parent.getTag() + ", current element :  " + currentElement.getTag() + " : " + parent.getBody());
+                }else{
+                    parent.setBody(body);
+                    System.out.println("parent " + parent.getTag() + " : " + parent.getBody());
+                }
+            }
+        }
         if(currentElement != null){
-            if(currentElement.parent.parent == null){
+            if(body.length() > 0) currentElement.setBody(body);
+            if(currentElement.getParent().getParent() == null){
                 currentElement = null;
             }else{
-                currentElement = currentElement.parent;
-                parent = currentElement.parent;
+                currentElement = currentElement.getParent();
+                parent = currentElement.getParent();
             }
         }else{
-            if(parent != null) parent = parent.parent;
+            if(parent != null) {
+                parent = parent.getParent();
+            }
         }
         clean(tagData);
     }

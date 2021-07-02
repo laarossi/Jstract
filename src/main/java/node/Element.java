@@ -9,16 +9,40 @@ import java.util.regex.Pattern;
 
 public class Element {
 
-    public Element parent;
-    public List<Element> children = new ArrayList<>();
-    public Map<String,String> attributes = new HashMap<>();
-    public String tag;
-    public String body;
+    private Element parent;
+    private List<Element> children = new ArrayList<>();
+    private Map<String,String> attributes = new HashMap<>();
+    private String tag;
+    private String body;
 
     public Element() { }
 
     public Element(String tag){
         this.tag = tag;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public Element getParent() {
+        return parent;
+    }
+
+    public void setParent(Element parent) {
+        this.parent = parent;
     }
 
     public void addChild(Element element){
@@ -33,9 +57,14 @@ public class Element {
         attributes.put(attribute, (previous == null ? value : previous.concat(" ").concat(value)));
     }
 
-    public void print(){
+    public String text(){
+        return null;
+    }
 
+    public void print(){
+        System.out.println("--------------------------------------");
         System.out.println("Tag name : " + tag + ((parent != null) ? " ==> parent : " + parent.tag : " ==> I'm root"));
+        System.out.println(body.length());
         for(String key : attributes.keySet()){
             System.out.print(key + " : '" + attributes.get(key) + "' | ");
         }
