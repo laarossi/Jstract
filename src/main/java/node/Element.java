@@ -18,7 +18,7 @@ public class Element {
     public Element() { }
 
     public Element(String tag){
-        this.tag = tag;
+        this.tag = tag.trim();
     }
 
     public String tag() {
@@ -26,16 +26,20 @@ public class Element {
     }
 
     public void setTag(String tag) {
-        this.tag = tag;
+        this.tag = tag.trim();
     }
 
     public String text() {
         return body;
     }
 
+    public String attr(String attribute){
+        return attributes.get(attribute);
+    }
+
     public void setBody(String body) {
-        if(this.body == null) this.body = body;
-        else this.body += body != null ? " " + body : "";
+        if(this.body == null) this.body = body.trim();
+        else this.body += body != null ? " " + body.trim() : "";
     }
 
     public Element getParent() {
@@ -59,7 +63,7 @@ public class Element {
             return;
         }
         String previous = attributes.get(attribute);
-        attributes.put(attribute, (previous == null ? value : previous.concat(" ").concat(value)));
+        attributes.put(attribute, (previous == null ? value.trim() : previous.concat(" ").concat(value.trim())));
     }
 
     public Map<String, String> getAttributes() {
@@ -81,9 +85,9 @@ public class Element {
     }
 
     public boolean isEqual(Element comparator) {
-        if(tag != null && !tag.trim().isEmpty()){
-            if(comparator.tag == null || comparator.tag.trim().isEmpty()) return false;
-            if(!tag.trim().equals(comparator.tag.trim())) return false;
+        if(tag != null && !tag.isEmpty()){
+            if(comparator.tag == null || comparator.tag.isEmpty()) return false;
+            if(!tag.equals(comparator.tag)) return false;
         }
         if(attributes.size() > 0){
             if(comparator.attributes.size() == 0) return false;
@@ -92,7 +96,7 @@ public class Element {
                 if(!comparatorAttr.containsKey(key)){
                     return false;
                 }
-                if(!comparatorAttr.get(key).trim().equals(attributes.get(key).trim())){
+                if(!comparatorAttr.get(key).equals(attributes.get(key))){
                     return false;
                 }
             }

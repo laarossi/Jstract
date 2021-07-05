@@ -1,6 +1,7 @@
 package document;
 
 import node.Element;
+import node.Tag;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -38,8 +39,29 @@ public class Document {
 
      public List<Element> get(String pattern) {
         if (pattern == null || pattern.trim().isEmpty()) return null;
+        return search(pattern);
+    }
+
+    public List<List<Element>> get(String... patterns){
+        List<List<Element>> result = new ArrayList<>();
+        for(String pattern : patterns){
+            result.add(search(pattern));
+        }
+        return result;
+    }
+
+    public List<Element> get(Tag... tags){
+        StringBuilder pattern = new StringBuilder();
+        for(Tag tag : tags){
+            pattern.append(tag.toString()).append(" ");
+        }
+        return search(pattern.toString());
+    }
+
+    private List<Element> search(String pattern) {
         String[] patterns = pattern.trim().replaceAll("([^/\"'><]*)(\\.|#|\\[)", "$1<=>$2").replaceAll(" +", " ").split(" ");
         List<Element> comparators = new ArrayList<>();
+        searchList = new CopyOnWriteArrayList<>();
         for (int i = 0; i < patterns.length; i++) {
             String p = patterns[i];
             List<String> subPatterns = Arrays.stream(p.split("<=>")).filter(value -> !value.trim().isEmpty()).collect(Collectors.toList());
