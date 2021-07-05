@@ -4,6 +4,8 @@ import node.Element;
 import document.Document;
 import document.DocumentBuilder;
 
+import javax.print.Doc;
+import java.io.*;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,18 @@ public class HtmlParser {
     public static Document get(String data){
         init();
         List<Element> documentTags = extractTags(data);
+        return DocumentBuilder.create(documentTags).build();
+    }
+
+    public static Document get(File htmlFile) throws IOException {
+        init();
+        StringBuilder data = new StringBuilder();
+        InputStream fileInputStream = new FileInputStream(htmlFile);
+        int character;
+        while ((character = fileInputStream.read()) != -1){
+            data.append((char)character);
+        }
+        List<Element> documentTags = extractTags(data.toString());
         return DocumentBuilder.create(documentTags).build();
     }
 
