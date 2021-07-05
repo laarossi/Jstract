@@ -36,7 +36,7 @@ public class Document {
         this.docElements = new CopyOnWriteArrayList<>(elements);
     }
 
-    public List<Element> get(String pattern) {
+     public List<Element> get(String pattern) {
         if (pattern == null || pattern.trim().isEmpty()) return null;
         String[] patterns = pattern.trim().replaceAll("([^/\"'><]*)(\\.|#|\\[)", "$1<=>$2").replaceAll(" +", " ").split(" ");
         List<Element> comparators = new ArrayList<>();
@@ -62,13 +62,13 @@ public class Document {
         }
         for(Element comparator : comparators){
             for(Element parent : searchList.size() == 0 ? docElements : searchList){
-                searchParent(comparator, parent);
+                searchNode(comparator, parent);
             }
         }
         return searchList;
     }
 
-    public void searchParent(Element comparator, Element element) {
+    public void searchNode(Element comparator, Element element) {
         if(comparator.isEqual(element)){
             if(!searchList.contains(element)) searchList.add(element);
             else searchList.remove(element);
@@ -76,7 +76,7 @@ public class Document {
             searchList.remove(element);
         }
         for(Element child : element.getChildren()){
-            searchParent(comparator, child);
+            searchNode(comparator, child);
         }
     }
 
