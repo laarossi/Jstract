@@ -22,9 +22,17 @@ public class DocumentBuilder {
         return new DocumentBuilder();
     }
 
+    public DocumentBuilder title(String title){
+        this.documentTitle = title;
+        return this;
+    }
+
     public Document build(){
         Document document = new Document();
-        if(parents.size() != 0) document.setDocElements(parents);
+        if(documentTitle != null){
+            document.setTitle(documentTitle);
+            document.setDocElements(parents);
+        }else document.init(parents);
         return document;
     }
 

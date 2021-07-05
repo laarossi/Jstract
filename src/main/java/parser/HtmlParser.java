@@ -12,12 +12,6 @@ import java.util.regex.Pattern;
 
 public class HtmlParser {
 
-    private final static String OPEN_TAG_PATTERN = "<[^>]*\"";
-
-    private final static String CLOSED_TAG_PATTERN = "</[^>]*\"";
-
-    private final static String ATTRIBUTE_PATTERN = "(\"[^\\\"'/>=]*\")";
-
     private static Element parent, currentElement;
 
     private static StringBuilder tagData;
@@ -182,19 +176,15 @@ public class HtmlParser {
         Element element = extractElement(tagData.toString());
         body = body.trim().length() == 0 ? null : body;
         if(parent == null){
-            System.out.println("Parent is null");
             element.setBody(body);
             parent = element;
             parents.add(parent);
         }else{
             if(currentElement != null){
-                System.out.println("parent : " + parent.getBody());
                 currentElement.setBody(body);
-                System.out.println("current element : " + currentElement.getBody());
                 parent = currentElement;
             }else {
                 parent.setBody(body);
-                System.out.println("parent ** : " + parent.getBody());
             }
             currentElement = element;
             currentElement.setParent(parent);
@@ -208,15 +198,12 @@ public class HtmlParser {
             if(parent != null){
                 if(currentElement != null){
                     currentElement.setBody(body);
-                    System.out.println("parent " + parent.getTag() + ", current element :  " + currentElement.getTag() + " : " + parent.getBody());
                 }else{
                     parent.setBody(body);
-                    System.out.println("parent " + parent.getTag() + " : " + parent.getBody());
                 }
             }
         }
         if(currentElement != null){
-            if(body.length() > 0) currentElement.setBody(body);
             if(currentElement.getParent().getParent() == null){
                 currentElement = null;
             }else{
@@ -229,10 +216,6 @@ public class HtmlParser {
             }
         }
         clean(tagData);
-    }
-
-    public static Element convert(String data){
-        return new Element();
     }
 
     public static boolean isOpenTag(String data){
