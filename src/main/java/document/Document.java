@@ -82,9 +82,10 @@ public class Document {
             }
             comparators.add(comparator);
         }
-        for(Element comparator : comparators){
+        for(int i = 0; i < comparators.size(); i++){
+            if(i  > 0 && searchList.size() == 0) return searchList;
             for(Element parent : searchList.size() == 0 ? docElements : searchList){
-                searchNode(comparator, parent);
+                searchNode(comparators.get(i), parent);
             }
         }
         return searchList;
